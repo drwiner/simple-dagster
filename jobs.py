@@ -1,7 +1,7 @@
 import dagster
 
 
-@dagster.asset
+@dagster.asset(config_schema=dict)
 def get_config(context):
     context.log.info("config: " + str(context.op_config))
     return context.op_config
@@ -13,11 +13,11 @@ def using_config(get_config):
 
 
 @dagster.job
-def do_atm():
+def do_configured_job():
     using_config(get_config())
 
 
 if __name__ == "__main__":
-    do_atm.execute_in_process(
+    do_configured_job.execute_in_process(
         run_config={"ops": {"get_config": {"config": {"env": "dev", "application": "do_stuff"}}}}
     )
