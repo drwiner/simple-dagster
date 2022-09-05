@@ -1,24 +1,24 @@
 import dagster
 
 
-@dagster.asset(config_schema={"env": str})
-def get_env(context):
-    context.log.info("env: " + context.op_config["env"])
-    return context.op_config["env"]
+@dagster.asset
+def get_config(context):
+    context.log.info("config: " + str(context.op_config))
+    return context.op_config
 
 @dagster.op
-def using_env(get_env):
-    print(f"using env {get_env}")
+def using_config(get_config):
+    # print("ok")
+    for key, value in get_config.items():
+        print(f"using {key} {value}")
 
-# Only difference in this example is the cloud vs local
 
 @dagster.job
 def do_atm():
-    using_env(get_env())
+    using_config(get_config())
 
 
 if __name__ == "__main__":
-    # Will log "config_param: stuff"
     do_atm.execute_in_process(
-        run_config={"ops": {"get_env": {"config": {"env": "CLOUD"}}}}
+        run_config={"ops": {"get_config": {"config": {"env": "dev", "application": "do_stuff"}}}}
     )
