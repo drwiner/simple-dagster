@@ -8,7 +8,6 @@ def get_config(context):
 
 @dagster.op
 def using_config(get_config):
-    # print("ok")
     for key, value in get_config.items():
         print(f"using {key} {value}")
 
