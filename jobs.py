@@ -8,7 +8,9 @@ def get_config(context):
 
 
 @dagster.op(config_schema={"key": str})
-def using_config(get_config):
+def using_config(context, get_config):
+    x = context.op_config["key"]
+    print (f"using route {x}")
     # print("ok")
     for key, value in get_config.items():
         print(f"using {key} {value}")
@@ -16,10 +18,10 @@ def using_config(get_config):
     return True
 
 @dagster.op
-def using_config_2(get_config):
-    # print("ok")
+def using_default_config(get_config):
+    print("No Config Key: Use Default")
     for key, value in get_config.items():
-        print(f"using again {key} {value}")
+        print(f"using default {key} {value}")
     return True
 
 @dagster.op
@@ -31,7 +33,7 @@ def combine(context, a: bool, b: bool):
 def do_configured_job():
     x = get_config()
     a = using_config(x)
-    b = using_config_2(x)
+    b = using_default_config(x)
     combine(a, b)
 
 
